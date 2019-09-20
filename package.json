@@ -1,0 +1,24 @@
+{
+  "name": "challenge",
+  "version": "1.0.0",
+  "description": "riqra challenge",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon -r dotenv/config server.js"
+  },
+  "keywords": [
+    "graphql"
+  ],
+  "author": "Jorge L. Alfaro",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^8.1.0",
+    "express": "^4.17.1",
+    "express-graphql": "^0.9.0",
+    "express-jwt": "^5.3.1",
+    "graphql": "^14.5.6",
+    "mysql2": "^1.7.0",
+    "sequelize": "^5.19.0"
+  }
+}
