@@ -11,8 +11,7 @@ const schema = buildSchema(`
         signUp(name: String!, email: String!, password: String!): AuthPayload
         login(email: String!, password: String!): AuthPayload
         createProduct(name: String!, brand: String!, price: Float!, image: String): Product
-        updateProduct(id: ID!, name: String, brand: String, price: Float): Product
-        uploadImageToProduct(id: ID!, image: String): Product
+        updateProduct(id: ID!, name: String, brand: String, price: Float, image: String): Product
         deleteProduct(id: ID!): Product
         addProductToCart(ProductId: ID, quantity: Int): Cart
         updateProductInCart(ProductId: ID, quantity: Int): Cart
@@ -57,6 +56,7 @@ const schema = buildSchema(`
         total: Float
         tax: Float
         subTotal: Float
+        customer: User
         products: [Product]
     }
 `)
