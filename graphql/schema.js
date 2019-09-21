@@ -3,7 +3,7 @@ const { buildSchema } = require('graphql');
 // GraphQL schema
 const schema = buildSchema(`
     type Query {
-        message: String
+        message(name: String): String
         search(term: String, page: Int, limit: Int): [Product]
     }
 
