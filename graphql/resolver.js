@@ -39,11 +39,20 @@ const createProduct = async({ name, brand, price, image }, req) => {
     return product
 }
 
+const deleteProduct = async({ id }, req) => {
+    if (!req.user) throw new Error('Not authenticated')
+    const product = await Product.findOne({ where : { id }})
+    if (product.userId != req.user) throw new Error('You cannot delete this product')
+    product.destroy()
+    return product
+}
+
 // Root resolver
 const root = {
     signUp,
     login,
-    createProduct
+    createProduct,
+    deleteProduct
 }
 
 module.exports = root
