@@ -3,10 +3,12 @@ const expressGraphql = require('express-graphql');
 const schema = require('./graphql/schema')
 const root = require('./graphql/resolver')
 const { sequelize } = require('./db/conn')
+const { authenticationMiddleware } = require('./middlewares/authentication')
 const migration = require('./models/index')
 const app = express()
 const PORT = process.env.PORT || 3000
 
+app.use(authenticationMiddleware);
 app.use('/graphql', expressGraphql({
     schema,
     rootValue: root,

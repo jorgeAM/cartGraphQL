@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt')
-var jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken')
 const User = require('../models/user')
 const Product = require('../models/product')
 const Cart = require('../models/cart')
@@ -32,11 +32,18 @@ const login = async ({ email, password }) => {
     }
 }
 
+const createProduct = async({ name, brand, price, image }, req) => {
+    if (!req.user) throw new Error('Not authenticated')
+    const product = await Product.create({ name, brand, price })
+    product.setUser(req.user)
+    return product
+}
+
 // Root resolver
 const root = {
-    message: ({ name }) => `claro p +cota ${name}`,    
     signUp,
-    login
+    login,
+    createProduct
 }
 
 module.exports = root

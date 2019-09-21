@@ -3,7 +3,6 @@ const { buildSchema } = require('graphql');
 // GraphQL schema
 const schema = buildSchema(`
     type Query {
-        message(name: String): String
         search(term: String, page: Int, limit: Int): [Product]
     }
 
@@ -13,8 +12,8 @@ const schema = buildSchema(`
         createProduct(name: String!, brand: String!, price: Float!, image: String): Product
         updateProduct(id: ID!, name: String, brand: String, price: Float, image: String): Product
         deleteProduct(id: ID!): Product
-        addProductToCart(ProductId: ID, quantity: Int): Cart
-        updateProductInCart(ProductId: ID, quantity: Int): Cart
+        addProductToCart(ProductId: ID!, quantity: Int!): Cart
+        updateProductInCart(ProductId: ID!, quantity: Int!): Cart
         pullOutProductInCart(productId: ID): Cart
         createOrder(cartId: ID!): Order
     }
