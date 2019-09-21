@@ -2,6 +2,8 @@ const User = require('./user')
 const Product = require('./product')
 const Cart = require('./cart')
 const Order = require('./order')
+const ProductOrder = require('./productOrder')
+const ProductCart = require('./productCart')
 const { sequelize } = require('../db/conn')
 
 module.exports = () => {
@@ -11,8 +13,30 @@ module.exports = () => {
     Product.belongsTo(User)
     Order.belongsTo(User)
     Cart.belongsTo(User)
-    Cart.belongsToMany(Product, { through: 'CartProduct' })
-    Order.belongsToMany(Product, { through: 'OrderProduct' })
+    Product.belongsToMany(Cart, {
+        through: ProductCart,
+        as: 'carts',
+        foreignKey: 'productId',
+        otherKey: 'cartId'
+    })
+    Product.belongsToMany(Order, {
+        through: ProductOrder,
+        as: 'orders',
+        foreignKey: 'productId',
+        otherKey: 'orderId'
+    })
+    Cart.belongsToMany(Product, {
+        through: ProductCart,
+        as: 'products',
+        foreignKey: 'cartId',
+        otherKey: 'productId'
+    })
+    Order.belongsToMany(Product, {
+        through: ProductOrder,
+        as: 'products',
+        foreignKey: 'orderId',
+        otherKey: 'productI'
+    })
 
     //sequelize.sync()
 }
