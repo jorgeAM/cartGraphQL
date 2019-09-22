@@ -12,9 +12,9 @@ const schema = buildSchema(`
         createProduct(name: String!, brand: String!, price: Float!, image: String): Product
         updateProduct(id: ID!, name: String, brand: String, price: Float, image: String): Product
         deleteProduct(id: ID!): Product
-        addProductToCart(ProductId: ID!, quantity: Int!): Cart
-        updateProductInCart(ProductId: ID!, quantity: Int!): Cart
-        pullOutProductInCart(productId: ID): Cart
+        addProductToCart(productId: ID!, quantity: Int!): Cart
+        updateProductInCart(productId: ID!, quantity: Int!): Cart
+        pullOutProductInCart(productId: ID!): Cart
         createOrder(cartId: ID!): Order
     }
 

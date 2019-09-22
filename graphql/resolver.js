@@ -32,14 +32,14 @@ const login = async ({ email, password }) => {
     }
 }
 
-const createProduct = async({ name, brand, price, image }, req) => {
+const createProduct = async ({ name, brand, price, image }, req) => {
     if (!req.user) throw new Error('Not authenticated')
     const product = await Product.create({ name, brand, price })
     product.setUser(req.user)
     return product
 }
 
-const deleteProduct = async({ id }, req) => {
+const deleteProduct = async ({ id }, req) => {
     if (!req.user) throw new Error('Not authenticated')
     const product = await Product.findOne({ where : { id }})
     if (product.userId != req.user) throw new Error('You cannot delete this product')
@@ -47,12 +47,57 @@ const deleteProduct = async({ id }, req) => {
     return product
 }
 
+const addProductToCart = async ({ productId, quantity }, req) => {
+    if (!req.user) throw new Error('Not authenticated')
+    const product = await Product.findOne({ where : { id: productId }})
+    if (product.userId != req.user) throw new Error('You cannot add this product to your shopping cart')
+    const [cart, _] = await Cart.findOrCreate({ where: { state: 'pending', userId: req.user}})
+    cart.addProduct(product, { through: { quantity }})
+    return cart
+}
+
+const updateProductInCart = async ({ productId, quantity }, req) => {
+    if (!req.user) throw new Error('Not authenticated')
+    const product = await Product.findOne({ where : { id: productId }})
+    const cart = await Cart.findOne({ where: { state: 'pending', userId: req.user}})
+    cart.addProduct(product, { through: { quantity }})
+    return cart
+}
+
+const pullOutProductInCart = async ({ productId }, req) => {
+    if (!req.user) throw new Error('Not authenticated')
+    const product = await Product.findOne({ where : { id: productId }})
+    const cart = await Cart.findOne({ where: { state: 'pending', userId: req.user}})
+    cart.removeProducts(product)
+    return cart
+}
+
+const createOrder = async ({ cartId }, req) => {
+    if (!req.user) throw new Error('Not authenticated')
+    const cart = await Cart.findByPk(cartId)
+    const order = Order.create({
+        total: cart.total,
+        tax: cart.tax,
+        subTotal: cart.subTotal
+    })
+
+    let products = await cart.getProducts()
+    products.forEach(product => {
+        order.addProduct(product, { through: { quantity: product.productCart.quantity }})        
+    });
+    return order
+}
+
 // Root resolver
 const root = {
     signUp,
     login,
     createProduct,
-    deleteProduct
+    deleteProduct,
+    addProductToCart,
+    updateProductInCart,
+    pullOutProductInCart,
+    createOrder
 }
 
 module.exports = root

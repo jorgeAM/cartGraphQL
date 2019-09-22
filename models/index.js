@@ -19,23 +19,23 @@ module.exports = () => {
         foreignKey: 'productId',
         otherKey: 'cartId'
     })
-    Product.belongsToMany(Order, {
-        through: ProductOrder,
-        as: 'orders',
-        foreignKey: 'productId',
-        otherKey: 'orderId'
-    })
     Cart.belongsToMany(Product, {
         through: ProductCart,
         as: 'products',
         foreignKey: 'cartId',
         otherKey: 'productId'
     })
+    Product.belongsToMany(Order, {
+        through: ProductOrder,
+        as: 'orders',
+        foreignKey: 'productId',
+        otherKey: 'orderId'
+    })
     Order.belongsToMany(Product, {
         through: ProductOrder,
         as: 'products',
         foreignKey: 'orderId',
-        otherKey: 'productI'
+        otherKey: 'productId'
     })
 
     //sequelize.sync()
