@@ -1,3 +1,4 @@
+const os = require('os')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const User = require('../models/user')
@@ -7,6 +8,7 @@ const Order = require('../models/order')
 const { updateTotal } = require('../services/updateTotal')
 const { sendMail } = require('../services/sendMail')
 const { generateOrderCode } = require('../services/generateOrderCode')
+const { uploadFile } = require('../services/uploadToCloudinary')
 
 const myOrders = async ({}, req) => {
     if (!req.user) throw new Error('Not authenticated')
@@ -41,7 +43,7 @@ const login = async ({ email, password }) => {
     }
 }
 
-const createProduct = async ({ name, brand, price, image }, req) => {
+const createProduct = async ({ name, brand, price }, req) => {
     if (!req.user) throw new Error('Not authenticated')
     const product = await Product.create({ name, brand, price })
     product.setUser(req.user)
@@ -99,8 +101,18 @@ const createOrder = async ({ cartId }, req) => {
     return order
 }
 
+const uploadImageToProduct = async ({ productId, file }) => {
+    const { filename, mimetype, encoding, createReadStream } = await file
+    let product = await Product.findByPk(productId)
+    const stream = createReadStream()    
+    const result = await uploadFile(stream)
+    stream.destroy()
+    product.image = result.url
+    return await product.save()
+}
+
 // Root resolver
-const root = {
+const root = { 
     myOrders,
     signUp,
     login,
@@ -109,7 +121,8 @@ const root = {
     addProductToCart,
     updateProductInCart,
     pullOutProductInCart,
-    createOrder
+    createOrder,
+    uploadImageToProduct
 }
 
 module.exports = root
