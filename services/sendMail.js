@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer')
+const path = require('path')
 
 const sendMail = async order => {
     try {
@@ -17,7 +18,7 @@ const sendMail = async order => {
             from: '"Jorge L." <test@test.com>',
             to: user.email,
             subject: `resumen de tu orden ${order.id}`,
-            html: '<b>Hello world?</b>'
+            html: { path: path.resolve(__dirname, '../public/pages/summary.html') }
         })        
     } catch (err) {
         console.log(err)
