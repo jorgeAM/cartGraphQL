@@ -6,6 +6,7 @@ const Cart = require('../models/cart')
 const Order = require('../models/order')
 const { updateTotal } = require('../services/updateTotal')
 const { sendMail } = require('../services/sendMail')
+const { generateOrderCode } = require('../services/generateOrderCode')
 
 const signUp = async ({ name, email, password }) => {
     try {
@@ -78,6 +79,7 @@ const createOrder = async ({ cartId }, req) => {
     if (!req.user) throw new Error('Not authenticated')
     const cart = await Cart.findByPk(cartId)
     const order = await Order.create({
+        code: await generateOrderCode(),
         total: cart.total,
         tax: cart.tax,
         subTotal: cart.subTotal,

@@ -2,6 +2,11 @@ const Sequelize = require('sequelize')
 const { sequelize } = require('../db/conn')
 
 const Order = sequelize.define('order', {
+    code: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true
+    },
     total: {
         type: Sequelize.FLOAT,
         allowNull: false
