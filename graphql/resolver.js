@@ -84,7 +84,8 @@ const pullOutProductInCart = async ({ productId }, req) => {
 
 const createOrder = async ({ cartId }, req) => {
     if (!req.user) throw new Error('Not authenticated')
-    const cart = await Cart.findByPk(cartId)
+    let cart = await Cart.findByPk(cartId)
+    if (cart.state === 'pending') throw new Error('Something got wrong!')
     const order = await Order.create({
         code: await generateOrderCode(),
         total: cart.total,
@@ -92,6 +93,8 @@ const createOrder = async ({ cartId }, req) => {
         subTotal: cart.subTotal,
         userId: req.user
     })
+    cart.state = 'paid'
+    await cart.save()
     let products = await cart.getProducts()
     products.forEach(async product => {
         await order.addProduct(product, { through: { quantity: product.productCart.quantity }})        
