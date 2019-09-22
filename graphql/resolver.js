@@ -7,6 +7,7 @@ const Order = require('../models/order')
 const { updateTotal } = require('../services/updateTotal')
 const { sendMail } = require('../services/sendMail')
 const { generateOrderCode } = require('../services/generateOrderCode')
+const { uploadFile } = require('../services/uploadToCloudinary')
 
 const myOrders = async ({}, req) => {
     if (!req.user) throw new Error('Not authenticated')
@@ -99,6 +100,14 @@ const createOrder = async ({ cartId }, req) => {
     return order
 }
 
+const uploadImageToProduct = async ({ productId, file }) => {
+    const { filename, mimetype, encoding, createReadStream } = await file
+    const stream = createReadStream()
+    console.log(stream)
+    uploadFile(filename)
+    return { filename, mimetype, encoding }
+}
+
 // Root resolver
 const root = {
     myOrders,
@@ -109,7 +118,8 @@ const root = {
     addProductToCart,
     updateProductInCart,
     pullOutProductInCart,
-    createOrder
+    createOrder,
+    uploadImageToProduct
 }
 
 module.exports = root

@@ -13,14 +13,12 @@ const schema = buildSchema(`
         signUp(name: String!, email: String!, password: String!): AuthPayload
         login(email: String!, password: String!): AuthPayload
         createProduct(name: String!, brand: String!, price: Float!): Product
-
-        uploadImageToProduct(productId: ID!, file: Upload!): File!
-
         deleteProduct(id: ID!): Product
         addProductToCart(productId: ID!, quantity: Int!): Cart
         updateProductInCart(productId: ID!, quantity: Int!): Cart
         pullOutProductInCart(productId: ID!): Cart
         createOrder(cartId: ID!): Order
+        uploadImageToProduct(productId: ID!, file: Upload!): File!
     }
 
     type File {
@@ -28,6 +26,7 @@ const schema = buildSchema(`
         path: String
         filename: String
         mimetype: String
+        encoding: String
     }
 
     type User {
