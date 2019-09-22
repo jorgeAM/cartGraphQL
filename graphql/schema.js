@@ -2,6 +2,8 @@ const { buildSchema } = require('graphql');
 
 // GraphQL schema
 const schema = buildSchema(`
+    scalar Upload
+
     type Query {
         search(term: String, page: Int, limit: Int): [Product]
         myOrders: [Order]
@@ -10,13 +12,22 @@ const schema = buildSchema(`
     type Mutation {
         signUp(name: String!, email: String!, password: String!): AuthPayload
         login(email: String!, password: String!): AuthPayload
-        createProduct(name: String!, brand: String!, price: Float!, image: String): Product
-        updateProduct(id: ID!, name: String, brand: String, price: Float, image: String): Product
+        createProduct(name: String!, brand: String!, price: Float!): Product
+
+        uploadImageToProduct(productId: ID!, file: Upload!): File!
+
         deleteProduct(id: ID!): Product
         addProductToCart(productId: ID!, quantity: Int!): Cart
         updateProductInCart(productId: ID!, quantity: Int!): Cart
         pullOutProductInCart(productId: ID!): Cart
         createOrder(cartId: ID!): Order
+    }
+
+    type File {
+        id: ID
+        path: String
+        filename: String
+        mimetype: String
     }
 
     type User {

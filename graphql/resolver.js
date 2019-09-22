@@ -41,7 +41,7 @@ const login = async ({ email, password }) => {
     }
 }
 
-const createProduct = async ({ name, brand, price, image }, req) => {
+const createProduct = async ({ name, brand, price }, req) => {
     if (!req.user) throw new Error('Not authenticated')
     const product = await Product.create({ name, brand, price })
     product.setUser(req.user)

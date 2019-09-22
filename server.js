@@ -1,5 +1,6 @@
 const express = require('express');
 const expressGraphql = require('express-graphql');
+const { graphqlUploadExpress } = require('graphql-upload')
 const schema = require('./graphql/schema')
 const root = require('./graphql/resolver')
 const { sequelize } = require('./db/conn')
@@ -9,6 +10,7 @@ const app = express()
 const PORT = process.env.PORT || 3000
 
 app.use(authenticationMiddleware);
+app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }))
 app.use('/graphql', expressGraphql({
     schema,
     rootValue: root,
