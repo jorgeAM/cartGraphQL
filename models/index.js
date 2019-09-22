@@ -38,5 +38,5 @@ module.exports = () => {
         otherKey: 'productId'
     })
 
-    //sequelize.sync()
+    sequelize.sync()
 }
