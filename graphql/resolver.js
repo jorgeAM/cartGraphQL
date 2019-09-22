@@ -1,3 +1,4 @@
+const os = require('os')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const User = require('../models/user')
@@ -7,7 +8,14 @@ const Order = require('../models/order')
 const { updateTotal } = require('../services/updateTotal')
 const { sendMail } = require('../services/sendMail')
 const { generateOrderCode } = require('../services/generateOrderCode')
+const cloudinary = require('cloudinary');
 const { uploadFile } = require('../services/uploadToCloudinary')
+
+cloudinary.config({ 
+    cloud_name: process.env.CLOUDINARY_NAME, 
+    api_key: process.env.CLOUDINARY_KEY, 
+    api_secret: process.env.CLOUDINARY_SECRET
+});
 
 const myOrders = async ({}, req) => {
     if (!req.user) throw new Error('Not authenticated')
@@ -102,14 +110,26 @@ const createOrder = async ({ cartId }, req) => {
 
 const uploadImageToProduct = async ({ productId, file }) => {
     const { filename, mimetype, encoding, createReadStream } = await file
-    const stream = createReadStream()
-    console.log(stream)
-    uploadFile(filename)
+    const result = await new Promise((resolve, reject) => {
+        createReadStream().pipe(
+            cloudinary.v2.uploader.upload_stream((err, res) => {
+                if (err) { 
+                    console.log(err)
+                    reject(err)
+                }
+                console.log(res)
+                resolve(res)
+            })
+        )
+    })
+    console.log(result)
+    //stream.destroy()
+    //await uploadFile(filename)
     return { filename, mimetype, encoding }
 }
 
 // Root resolver
-const root = {
+const root = { 
     myOrders,
     signUp,
     login,

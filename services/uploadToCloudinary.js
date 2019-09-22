@@ -6,9 +6,8 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_SECRET
 });
 
-const uploadFile = (filename, opts = null) => {
-    cloudinary.v2.uploader.upload(filename, (err, res) => console.log(res, err))
-
+const uploadFile = async (filename) => {
+    return cloudinary.v2.uploader.upload(filename)
 }
 
 module.exports = { uploadFile }
