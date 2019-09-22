@@ -1,4 +1,3 @@
-const os = require('os')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const User = require('../models/user')
@@ -101,8 +100,9 @@ const createOrder = async ({ cartId }, req) => {
     return order
 }
 
-const uploadImageToProduct = async ({ productId, file }) => {
-    const { filename, mimetype, encoding, createReadStream } = await file
+const uploadImageToProduct = async ({ productId, file }, req) => {
+    if (!req.user) throw new Error('Not authenticated')
+    const { createReadStream } = await file
     let product = await Product.findByPk(productId)
     const stream = createReadStream()    
     const result = await uploadFile(stream)
