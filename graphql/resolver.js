@@ -8,6 +8,12 @@ const { updateTotal } = require('../services/updateTotal')
 const { sendMail } = require('../services/sendMail')
 const { generateOrderCode } = require('../services/generateOrderCode')
 
+const myOrders = async ({}, req) => {
+    if (!req.user) throw new Error('Not authenticated')
+    const user = await User.findByPk(req.user)
+    return await user.getOrders()
+}
+
 const signUp = async ({ name, email, password }) => {
     try {
         const user = await User.create({
@@ -95,6 +101,7 @@ const createOrder = async ({ cartId }, req) => {
 
 // Root resolver
 const root = {
+    myOrders,
     signUp,
     login,
     createProduct,
