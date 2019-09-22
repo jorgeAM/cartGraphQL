@@ -4,6 +4,7 @@ const { buildSchema } = require('graphql');
 const schema = buildSchema(`
     type Query {
         search(term: String, page: Int, limit: Int): [Product]
+        myOrders: [Order]
     }
 
     type Mutation {
