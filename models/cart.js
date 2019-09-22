@@ -1,6 +1,5 @@
 const Sequelize = require('sequelize')
 const { sequelize } = require('../db/conn')
-const User = require('./user')
 
 const Cart = sequelize.define('cart', {
     total: {
@@ -24,5 +23,6 @@ const Cart = sequelize.define('cart', {
         defaultValue: 'pending'
     }
 })
+
 
 module.exports = Cart
