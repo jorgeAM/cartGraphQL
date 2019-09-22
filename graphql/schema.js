@@ -18,7 +18,7 @@ const schema = buildSchema(`
         updateProductInCart(productId: ID!, quantity: Int!): Cart
         pullOutProductInCart(productId: ID!): Cart
         createOrder(cartId: ID!): Order
-        uploadImageToProduct(productId: ID!, file: Upload!): File!
+        uploadImageToProduct(productId: ID!, file: Upload!): Product!
     }
 
     type File {
