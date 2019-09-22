@@ -5,6 +5,7 @@ const Product = require('../models/product')
 const Cart = require('../models/cart')
 const Order = require('../models/order')
 const { updateTotal } = require('../services/updateTotal')
+const { sendMail } = require('../services/sendMail')
 
 const signUp = async ({ name, email, password }) => {
     try {
@@ -53,7 +54,7 @@ const addProductToCart = async ({ productId, quantity }, req) => {
     const product = await Product.findOne({ where : { id: productId }})
     if (product.userId != req.user) throw new Error('You cannot add this product to your shopping cart')
     const [cart, _] = await Cart.findOrCreate({ where: { state: 'pending', userId: req.user}})
-    cart.addProduct(product, { through: { quantity }})
+    await cart.addProduct(product, { through: { quantity }})
     return updateTotal(cart)
 }
 
@@ -61,7 +62,7 @@ const updateProductInCart = async ({ productId, quantity }, req) => {
     if (!req.user) throw new Error('Not authenticated')
     const product = await Product.findOne({ where : { id: productId }})
     const cart = await Cart.findOne({ where: { state: 'pending', userId: req.user}})
-    cart.addProduct(product, { through: { quantity }})
+    await cart.addProduct(product, { through: { quantity }})
     return updateTotal(cart)
 }
 
@@ -79,12 +80,14 @@ const createOrder = async ({ cartId }, req) => {
     const order = await Order.create({
         total: cart.total,
         tax: cart.tax,
-        subTotal: cart.subTotal
+        subTotal: cart.subTotal,
+        userId: req.user
     })
     let products = await cart.getProducts()
-    products.forEach(product => {
-        order.addProduct(product, { through: { quantity: product.productCart.quantity }})        
+    products.forEach(async product => {
+        await order.addProduct(product, { through: { quantity: product.productCart.quantity }})        
     });
+    sendMail(order)
     return order
 }
 
