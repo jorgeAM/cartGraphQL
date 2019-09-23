@@ -8,12 +8,11 @@ const { updateTotal } = require('../services/updateTotal')
 const { sendMail } = require('../services/sendMail')
 const { generateOrderCode } = require('../services/generateOrderCode')
 const { uploadFile } = require('../services/uploadToCloudinary')
-const { pushProduct, searchProducts } = require('../services/algolia')
+const { pushProduct, popProduct, modifyProduct, searchProducts } = require('../services/algolia')
 
 const search = async ({ term, page, limit }, req) => {
     if (!req.user) throw new Error('Not authenticated')
     let products = await searchProducts(term)
-    console.log(await searchProducts(term))
     return products.hits
 }
 
@@ -62,6 +61,7 @@ const deleteProduct = async ({ id }, req) => {
     const product = await Product.findOne({ where : { id }})
     if (product.userId != req.user) throw new Error('You cannot delete this product')
     product.destroy()
+    await popProduct(id)
     return product
 }
 
@@ -119,6 +119,7 @@ const uploadImageToProduct = async ({ productId, file }, req) => {
     const result = await uploadFile(stream)
     stream.destroy()
     product.image = result.url
+    await modifyProduct(product)
     return await product.save()
 }
 

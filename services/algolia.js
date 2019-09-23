@@ -4,19 +4,26 @@ const client = algoliasearch(process.env.ALGOLIA_ID, process.env.ALGOLIA_KEY)
 const index = client.initIndex('Productos')
 
 const pushProduct = async product => {
-    await index.addObject(product)
+    await index.addObject({
+        objectID: product.id,
+        name: product.name,
+        brand: product.brand,
+        userId: product.userId
+    })
 }
 
 const popProduct = async productId => {
     await index.deleteObject(productId)
 }
 
-const retrieveProduct = async productId => {
-    await index.getObject('231136311')
-}
-
 const modifyProduct = async product => {
-    await index.partialUpdateObject(product, true)
+    await index.partialUpdateObject({
+        objectID: product.id,
+        name: product.name,
+        brand: product.brand,
+        userId: product.userId,
+        image: product.image
+    }, true)
 }
 
 const searchProducts = async search => {
@@ -26,7 +33,6 @@ const searchProducts = async search => {
 module.exports = {
     pushProduct,
     popProduct,
-    retrieveProduct,
     modifyProduct,
     searchProducts
 }
