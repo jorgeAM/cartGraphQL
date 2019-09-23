@@ -23,7 +23,7 @@ sequelize.authenticate()
 .then(() => {
     migration()
     console.log(`Connection has been established successfully 😎`)
-    app.listen(4000, () => console.log(`GraphQL erver is running on port ${PORT} 🚀`))
+    app.listen(PORT, () => console.log(`GraphQL erver is running on port ${PORT} 🚀`))
 })
 .catch(err => console.error('Unable to connect to the database:', err))
 

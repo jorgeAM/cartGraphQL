@@ -34,6 +34,7 @@ const schema = buildSchema(`
         name: String
         email: String
         products: [Product]
+        cart: Cart
         orders: [Order]
     }
 

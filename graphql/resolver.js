@@ -1,4 +1,3 @@
-const os = require('os')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const User = require('../models/user')
@@ -9,6 +8,13 @@ const { updateTotal } = require('../services/updateTotal')
 const { sendMail } = require('../services/sendMail')
 const { generateOrderCode } = require('../services/generateOrderCode')
 const { uploadFile } = require('../services/uploadToCloudinary')
+const { pushProduct, popProduct, modifyProduct, searchProducts } = require('../services/algolia')
+
+const search = async ({ term, page, limit }, req) => {
+    if (!req.user) throw new Error('Not authenticated')
+    let products = await searchProducts(term)
+    return products.hits
+}
 
 const myOrders = async ({}, req) => {
     if (!req.user) throw new Error('Not authenticated')
@@ -45,8 +51,8 @@ const login = async ({ email, password }) => {
 
 const createProduct = async ({ name, brand, price }, req) => {
     if (!req.user) throw new Error('Not authenticated')
-    const product = await Product.create({ name, brand, price })
-    product.setUser(req.user)
+    const product = await Product.create({ name, brand, price, userId: req.user })
+    await pushProduct(product)
     return product
 }
 
@@ -55,6 +61,7 @@ const deleteProduct = async ({ id }, req) => {
     const product = await Product.findOne({ where : { id }})
     if (product.userId != req.user) throw new Error('You cannot delete this product')
     product.destroy()
+    await popProduct(id)
     return product
 }
 
@@ -85,7 +92,8 @@ const pullOutProductInCart = async ({ productId }, req) => {
 
 const createOrder = async ({ cartId }, req) => {
     if (!req.user) throw new Error('Not authenticated')
-    const cart = await Cart.findByPk(cartId)
+    let cart = await Cart.findByPk(cartId)
+    if (cart.state === 'pending') throw new Error('Something got wrong!')
     const order = await Order.create({
         code: await generateOrderCode(),
         total: cart.total,
@@ -93,6 +101,8 @@ const createOrder = async ({ cartId }, req) => {
         subTotal: cart.subTotal,
         userId: req.user
     })
+    cart.state = 'paid'
+    await cart.save()
     let products = await cart.getProducts()
     products.forEach(async product => {
         await order.addProduct(product, { through: { quantity: product.productCart.quantity }})        
@@ -101,18 +111,21 @@ const createOrder = async ({ cartId }, req) => {
     return order
 }
 
-const uploadImageToProduct = async ({ productId, file }) => {
-    const { filename, mimetype, encoding, createReadStream } = await file
+const uploadImageToProduct = async ({ productId, file }, req) => {
+    if (!req.user) throw new Error('Not authenticated')
+    const { createReadStream } = await file
     let product = await Product.findByPk(productId)
     const stream = createReadStream()    
     const result = await uploadFile(stream)
     stream.destroy()
     product.image = result.url
+    await modifyProduct(product)
     return await product.save()
 }
 
 // Root resolver
 const root = { 
+    search,
     myOrders,
     signUp,
     login,
