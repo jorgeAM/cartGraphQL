@@ -6,7 +6,9 @@ const index = client.initIndex('Productos')
 const pushProduct = async product => {
     await index.addObject({
         objectID: product.id,
+        id: product.id,
         name: product.name,
+        price: product.price,
         brand: product.brand,
         userId: product.userId
     })
@@ -19,7 +21,9 @@ const popProduct = async productId => {
 const modifyProduct = async product => {
     await index.partialUpdateObject({
         objectID: product.id,
+        id: product.id,
         name: product.name,
+        price: product.price,
         brand: product.brand,
         userId: product.userId,
         image: product.image
