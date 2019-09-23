@@ -8,6 +8,14 @@ const { updateTotal } = require('../services/updateTotal')
 const { sendMail } = require('../services/sendMail')
 const { generateOrderCode } = require('../services/generateOrderCode')
 const { uploadFile } = require('../services/uploadToCloudinary')
+const { pushProduct, searchProducts } = require('../services/algolia')
+
+const search = async ({ term, page, limit }, req) => {
+    if (!req.user) throw new Error('Not authenticated')
+    let products = await searchProducts(term)
+    console.log(await searchProducts(term))
+    return products.hits
+}
 
 const myOrders = async ({}, req) => {
     if (!req.user) throw new Error('Not authenticated')
@@ -44,8 +52,8 @@ const login = async ({ email, password }) => {
 
 const createProduct = async ({ name, brand, price }, req) => {
     if (!req.user) throw new Error('Not authenticated')
-    const product = await Product.create({ name, brand, price })
-    product.setUser(req.user)
+    const product = await Product.create({ name, brand, price, userId: req.user })
+    await pushProduct(product)
     return product
 }
 
@@ -116,6 +124,7 @@ const uploadImageToProduct = async ({ productId, file }, req) => {
 
 // Root resolver
 const root = { 
+    search,
     myOrders,
     signUp,
     login,
