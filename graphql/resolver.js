@@ -22,6 +22,26 @@ const myOrders = async ({}, req) => {
     return await user.getOrders()
 }
 
+const products = async () => {
+    const products = await Product.findAll()
+    return products
+}
+
+const product = async ({ id }) => {
+    const user = await Product.findByPk(id)
+    return await user.getOrders()
+}
+
+const users = async () => {
+    const users = await User.findAll()
+    return users
+}
+
+const user = async ({ id }) => {
+    const user = await User.findByPk(id)
+    return user
+}
+
 const signUp = async ({ name, email, password }) => {
     try {
         const user = await User.create({
@@ -127,6 +147,10 @@ const uploadImageToProduct = async ({ productId, file }, req) => {
 const root = { 
     search,
     myOrders,
+    products,
+    product,
+    users,
+    user,
     signUp,
     login,
     createProduct,

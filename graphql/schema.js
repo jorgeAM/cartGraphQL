@@ -7,6 +7,10 @@ const schema = buildSchema(`
     type Query {
         search(term: String, page: Int, limit: Int): [Product]
         myOrders: [Order]
+        products: [Product]
+        product(id: ID!): Product
+        users: [User]
+        user(id: ID!): User
     }
 
     type Mutation {
