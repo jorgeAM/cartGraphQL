@@ -15,7 +15,7 @@ const sendMail = async order => {
         const user = await order.getUser()
         const products = await order.getProducts()
         await transporter.sendMail({
-            from: '"Jorge L." <test@test.com>',
+            from: '"Jorge L." <jorge.alfmur@gmail.com>',
             to: user.email,
             subject: `resumen de tu orden ${order.id}`,
             html: { path: path.resolve(__dirname, '../public/pages/summary.html') }
